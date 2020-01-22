@@ -1,0 +1,2 @@
+# requests for communication with Wikipedia API
+requests>=2.22.0
