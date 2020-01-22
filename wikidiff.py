@@ -27,7 +27,7 @@ def printDiff(revision, format="colors"):
 	res = json.loads(data.decode('utf8'))
 	
 	deleteEx = r"<del .+?>(.+?)<\/del>"
-	htmlEx = r"<(|\/)(td|div)(| .+?)>"
+	htmlEx = r"<(|\/)(td|div|a)(| .+?)>"
 	
 	if "compare" not in res:
 		print("No content found!")
