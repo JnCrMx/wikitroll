@@ -27,6 +27,7 @@ def printDiff(revision, format="colors"):
 	res = json.loads(data.decode('utf8'))
 	
 	deleteEx = r"<del .+?>(.+?)<\/del>"
+	insertEx = r"<ins .+?>(.+?)<\/ins>"
 	htmlEx = r"<(|\/)(td|div|a)(| .+?)>"
 	
 	if "compare" not in res:
@@ -49,16 +50,15 @@ def printDiff(revision, format="colors"):
 					line = re.sub(deleteEx, "!!!\\1!!!", line)
 				line = re.sub(htmlEx, "", line)
 				if format=="html":
-					line = "<troll>+</troll> "+line
-					line = line+"<br>"
+					line = "<p class=tp>"+line+"</p>"
 			else:
 				line = re.sub(htmlEx, "", line)
 				line = line.strip()
 				if format=="termcolor":
 					line = "\33[31m"+line+"\033[0m"
 				elif format=="html":
-					line = "<troll>"+line+"</troll><br>"
-					line = "<troll>+</troll> "+line
+					line = "<troll>"+line+"</troll>"
+					line = "<p class=tp>"+line+"</p>"
 				elif format=="markdown":
 					line = "**"+line+"**"
 				elif format=="plain":
@@ -67,25 +67,24 @@ def printDiff(revision, format="colors"):
 		if line.startswith("<td class=\"diff-addedline\">"):
 			if "<ins class=\"diffchange diffchange-inline\">" in line:
 				if format=="termcolor":
-					line = re.sub(deleteEx, "\33[31m"+"\\1"+"\033[0m", line)
+					line = re.sub(insertEx, "\33[32m"+"\\1"+"\033[0m", line)
 				elif format=="html":
-					line = re.sub(deleteEx, "<original>\\1</original>", line)
+					line = re.sub(insertEx, "<original>\\1</original>", line)
 				elif format=="markdown":
-					line = re.sub(deleteEx, "**\\1**", line)
+					line = re.sub(insertEx, "*\\1*", line)
 				elif format=="plain":
-					line = re.sub(deleteEx, "!!!\\1!!!", line)
+					line = re.sub(insertEx, "???\\1???", line)
 				line = re.sub(htmlEx, "", line)
 				if format=="html":
-					line = "<orginal>-</original> "+line
-					line = line+"<br>"
+					line = "<p class=op>"+line+"</p>"
 			else:
 				line = re.sub(htmlEx, "", line)
 				line = line.strip()
 				if format=="termcolor":
-					line = "\33[31m"+line+"\033[0m"
+					line = "\33[32m"+line+"\033[0m"
 				elif format=="html":
-					line = "<original>"+line+"</original><br>"
-					line = "<orginal>-</original> "+line
+					line = "<original>"+line+"</original>"
+					line = "<p class=op>"+line+"</p>"
 				elif format=="markdown":
 					line = "*"+line+"*"
 				elif format=="plain":
@@ -97,5 +96,5 @@ def printDiff(revision, format="colors"):
 			if line != lastline:
 				lastline = line
 				if format=="html":
-					line = line+"<br>"
+					line = "<p class=cp>"+line+"</p>"
 				print(line)
