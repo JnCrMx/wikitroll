@@ -11,7 +11,7 @@ from datetime import datetime
 sys.stdout.reconfigure(encoding='utf-8')
 
 parser = OptionParser("usage: %prog [options] article-title")
-parser.add_option("-f", "--format", default="termcolor", action="store", dest="format", help="specify output format: [termcolor] html markdown plain")
+parser.add_option("-f", "--format", default="html", action="store", dest="format", help="specify output format: termcolor [html] markdown plain")
 
 (options, args) = parser.parse_args()
 format = options.format
