@@ -6,6 +6,9 @@ import sys
 import os
 from optparse import OptionParser
 import wikidiff
+from datetime import datetime
+
+sys.stdout.reconfigure(encoding='utf-8')
 
 parser = OptionParser("usage: %prog [options] article-title")
 parser.add_option("-f", "--format", default="termcolor", action="store", dest="format", help="specify output format: [termcolor] html markdown plain")
@@ -30,6 +33,8 @@ params = {
 	"rvlimit": "max"
 }
 
+dateformat = "%Y-%m-%dT%H:%M:%SZ"
+
 first = True
 while True:
 	response = session.get(url=url, params=params, stream=True)
@@ -50,6 +55,15 @@ while True:
 		if format=="markdown":
 			print("# "+page["title"])
 		if format=="html":
+			print("<html>")
+			print("<head>")
+			print("<title>"+page["title"]+"</title>")
+			print("<style>")
+			print("troll { color: red }")
+			print("original { color: green }")
+			print("</style>")
+			print("</head>")
+			print("<body>")
 			print("<h1>"+page["title"]+"</h1>")
 		if format=="plain":
 			print("#---------------------------"+page["title"]+"---------------------------#")
@@ -61,14 +75,19 @@ while True:
 			comment = revision["comment"]
 			if "Änderungen von" in comment and "zurückgesetzt" in comment:
 				revid=revision["revid"]
+				time=revision["timestamp"]
+				time=str(datetime.strptime(time, dateformat))
 				if format=="plain":
-					print("----------------------------"+str(revid)+"----------------------------")
+					print("----------------------------"+str(revid)+" @ "+time+"----------------------------")
 				if format=="termcolor":
-					print("\33[4m"+str(revid)+"\033[0m")
+					print("\33[4m"+str(revid)+"\033[0m"+" @ "+time)
 				elif format=="html":
+					print("<hr>")
 					print("<h2>"+str(revid)+"</h2>")
+					print("<h3>"+time+"</h3>")
 				elif format=="markdown":
 					print("## "+str(revid))
+					print("### "+time)
 				wikidiff.printDiff(revid, format)
 	
 	lastrev = revisions[len(revisions)-1]
@@ -77,3 +96,5 @@ while True:
 	else:
 		break
 
+if format=="html":
+	print("<body>")
