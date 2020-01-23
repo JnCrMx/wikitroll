@@ -26,7 +26,7 @@ def printDiff(revision, url, format="colors"):
 	
 	deleteEx = r"<del .+?>(.+?)<\/del>"
 	insertEx = r"<ins .+?>(.+?)<\/ins>"
-	htmlEx = r"<(|\/)(td|div|a)(| .+?)>"
+	htmlEx = r"(<|&lt;)(|\/)(td|div|a|ref)(| .+?)(>|&gt;)"
 	
 	if "compare" not in res:
 		print("No content found!")
