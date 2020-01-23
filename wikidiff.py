@@ -6,10 +6,8 @@ import re
 import sys
 import difflib
 
-def printDiff(revision, format="colors"):
+def printDiff(revision, url, format="colors"):
 	session = requests.Session()
-	
-	url = "https://de.wikipedia.org/w/api.php"
 	
 	params = {
 		"action": "compare",

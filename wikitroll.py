@@ -12,16 +12,26 @@ sys.stdout.reconfigure(encoding='utf-8')
 
 parser = OptionParser("usage: %prog [options] article-title")
 parser.add_option("-f", "--format", default="html", action="store", dest="format", help="specify output format: termcolor [html] markdown plain")
+parser.add_option("-l", "--language", default="de", action="store", dest="lang", help="specify Wikipedia language to query")
 
 (options, args) = parser.parse_args()
 format = options.format
+lang = options.lang
 
 if len(args) != 1:
 	parser.error("incorrect number of arguments")
 
 session = requests.Session()
 
-url = "https://de.wikipedia.org/w/api.php"
+languages = { }
+
+languages["de"] = {}
+languages["de"]["url"] = "https://de.wikipedia.org/w/api.php"
+languages["de"]["comment"] = ["Änderungen von", "zurückgesetzt"]
+
+languages["en"] = {}
+languages["en"]["url"] = "https://en.wikipedia.org/w/api.php"
+languages["en"]["comment"] = ["Reverted", "edit", "to last revision by"]
 
 params = {
 	"action": "query",
@@ -37,7 +47,7 @@ dateformat = "%Y-%m-%dT%H:%M:%SZ"
 
 first = True
 while True:
-	response = session.get(url=url, params=params, stream=True)
+	response = session.get(url=languages[lang]["url"], params=params, stream=True)
 	data = bytearray()
 	for chunk in response.iter_content(chunk_size=1024):
 		data += chunk	
@@ -76,7 +86,8 @@ while True:
 	for revision in revisions:
 		if "comment" in revision:
 			comment = revision["comment"]
-			if "Änderungen von" in comment and "zurückgesetzt" in comment:
+			istroll = all(ele in comment for ele in languages[lang]["comment"])
+			if istroll:
 				revid=revision["revid"]
 				time=revision["timestamp"]
 				time=str(datetime.strptime(time, dateformat))
@@ -91,7 +102,7 @@ while True:
 				elif format=="markdown":
 					print("## "+str(revid))
 					print("### "+time)
-				wikidiff.printDiff(revid, format)
+				wikidiff.printDiff(revid, languages[lang]["url"], format)
 	
 	lastrev = revisions[len(revisions)-1]
 	if lastrev["parentid"] != 0:
@@ -100,4 +111,5 @@ while True:
 		break
 
 if format=="html":
-	print("<body>")
+	print("</body>")
+	print("</html>")
