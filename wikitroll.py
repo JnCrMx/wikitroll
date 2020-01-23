@@ -12,7 +12,7 @@ sys.stdout.reconfigure(encoding='utf-8')
 
 parser = OptionParser("usage: %prog [options] article-title")
 parser.add_option("-f", "--format", default="html", action="store", dest="format", help="specify output format: termcolor [html] markdown plain")
-parser.add_option("-l", "--language", default="de", action="store", dest="lang", help="specify Wikipedia language to query")
+parser.add_option("-l", "--language", default="en", action="store", dest="lang", help="specify Wikipedia language to query")
 
 (options, args) = parser.parse_args()
 format = options.format
@@ -31,7 +31,10 @@ languages["de"]["comment"] = ["Änderungen von", "zurückgesetzt"]
 
 languages["en"] = {}
 languages["en"]["url"] = "https://en.wikipedia.org/w/api.php"
-languages["en"]["comment"] = ["Reverted", "edit", "to last revision by"]
+languages["en"]["comment"] = ["Reverted", "edit"]
+
+if lang not in languages:
+	parser.error("unknown language or language not supported yet")
 
 params = {
 	"action": "query",
