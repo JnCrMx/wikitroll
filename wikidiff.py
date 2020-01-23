@@ -55,7 +55,6 @@ def printDiff(revision, url, format="colors"):
 				if format=="termcolor":
 					line = "\33[31m"+line+"\033[0m"
 				elif format=="html":
-					line = "<troll>"+line+"</troll>"
 					line = "<p class=tp>"+line+"</p>"
 				elif format=="markdown":
 					line = "**"+line+"**"
@@ -81,7 +80,6 @@ def printDiff(revision, url, format="colors"):
 				if format=="termcolor":
 					line = "\33[32m"+line+"\033[0m"
 				elif format=="html":
-					line = "<original>"+line+"</original>"
 					line = "<p class=op>"+line+"</p>"
 				elif format=="markdown":
 					line = "*"+line+"*"
