@@ -41,7 +41,7 @@ def printDiff(revision, url, format="colors"):
 				if format=="termcolor":
 					line = re.sub(deleteEx, "\33[31m"+"\\1"+"\033[0m", line)
 				elif format=="html":
-					line = re.sub(deleteEx, "<troll>\\1</troll>", line)
+					line = re.sub(deleteEx, "<itroll>\\1</itroll>", line)
 				elif format=="markdown":
 					line = re.sub(deleteEx, "**\\1**", line)
 				elif format=="plain":
@@ -55,7 +55,7 @@ def printDiff(revision, url, format="colors"):
 				if format=="termcolor":
 					line = "\33[31m"+line+"\033[0m"
 				elif format=="html":
-					line = "<p class=tp>"+line+"</p>"
+					line = "<p class=tp><ltroll>"+line+"</ltroll></p>"
 				elif format=="markdown":
 					line = "**"+line+"**"
 				elif format=="plain":
@@ -66,7 +66,7 @@ def printDiff(revision, url, format="colors"):
 				if format=="termcolor":
 					line = re.sub(insertEx, "\33[32m"+"\\1"+"\033[0m", line)
 				elif format=="html":
-					line = re.sub(insertEx, "<original>\\1</original>", line)
+					line = re.sub(insertEx, "<ioriginal>\\1</ioriginal>", line)
 				elif format=="markdown":
 					line = re.sub(insertEx, "*\\1*", line)
 				elif format=="plain":
@@ -80,7 +80,7 @@ def printDiff(revision, url, format="colors"):
 				if format=="termcolor":
 					line = "\33[32m"+line+"\033[0m"
 				elif format=="html":
-					line = "<p class=op>"+line+"</p>"
+					line = "<p class=op><loriginal>"+line+"</loriginal></p>"
 				elif format=="markdown":
 					line = "*"+line+"*"
 				elif format=="plain":
