@@ -36,24 +36,27 @@ languages["en"]["comment"] = ["Reverted", "edit"]
 if lang not in languages:
 	parser.error("unknown language or language not supported yet")
 
+title = args[0]
+
 params = {
 	"action": "query",
 	"format": "json",
 	"prop": "revisions|info",
-	"titles": args[0],
+	"titles": title,
 	"rvprop": "ids|timestamp|comment",
 	"rvslots": "main",
 	"rvlimit": "max"
 }
 
 dateformat = "%Y-%m-%dT%H:%M:%SZ"
+href = f"https://{lang}.wikipedia.org/w/index.php?title={title}&oldid="
 
 first = True
 while True:
 	response = session.get(url=languages[lang]["url"], params=params, stream=True)
 	data = bytearray()
 	for chunk in response.iter_content(chunk_size=1024):
-		data += chunk	
+		data += chunk
 
 	res = json.loads(data.decode('utf8'))
 	page = list(res["query"]["pages"].values())[0]
@@ -61,7 +64,7 @@ while True:
 	if "missing" in page:
 		print("Cannot find page: "+page["title"], file=sys.stderr)
 		sys.exit(2)
-		
+
 	if first:
 		if format=="termcolor":
 			print("\33[1m"+"\33[4m"+page["title"]+"\033[0m")
@@ -76,6 +79,8 @@ while True:
 			print("ioriginal { color: green; font-weight: bold; }")
 			print("ltroll { color: red; }")
 			print("loriginal { color: green; }")
+			print(".good { color: green; }")
+			print(".bad { color: red; }")
 			print(".tp { border: 2px solid red; padding: 5px; margin: 5px; }")
 			print(".op { border: 2px solid green; padding: 5px; margin: 5px; }")
 			print(".cp { border: 2px solid black; padding: 5px; margin: 5px; }")
@@ -94,6 +99,7 @@ while True:
 			istroll = all(ele in comment for ele in languages[lang]["comment"])
 			if istroll:
 				revid=revision["revid"]
+				previd=revision["parentid"]
 				time=revision["timestamp"]
 				time=str(datetime.strptime(time, dateformat))
 				if format=="plain":
@@ -102,13 +108,13 @@ while True:
 					print("\33[4m"+str(revid)+"\033[0m"+" @ "+time)
 				elif format=="html":
 					print("<hr>")
-					print("<h2>"+str(revid)+"</h2>")
+					print(f"<h2><a class=\"bad\" href=\"{href}{previd}\">{previd}</a> / <a class=\"good\" href=\"{href}{revid}\">{revid}</a></h2>")
 					print("<h3>"+time+"</h3>")
 				elif format=="markdown":
 					print("## "+str(revid))
 					print("### "+time)
 				wikidiff.printDiff(revid, languages[lang]["url"], format)
-	
+
 	lastrev = revisions[len(revisions)-1]
 	if lastrev["parentid"] != 0:
 		params["rvstartid"] = lastrev["parentid"]

@@ -8,7 +8,7 @@ import difflib
 
 def printDiff(revision, url, format="colors"):
 	session = requests.Session()
-	
+
 	params = {
 		"action": "compare",
 		"format": "json",
@@ -16,27 +16,27 @@ def printDiff(revision, url, format="colors"):
 		"torelative": "prev",
 		"prop": "diff"
 	}
-	
+
 	response = session.get(url=url, params=params, stream=True)
 	data = bytearray()
 	for chunk in response.iter_content(chunk_size=1024):
-		data += chunk	
-	
+		data += chunk
+
 	res = json.loads(data.decode('utf8'))
-	
+
 	deleteEx = r"<del .+?>(.+?)<\/del>"
 	insertEx = r"<ins .+?>(.+?)<\/ins>"
 	htmlEx = r"(<|&lt;)(|\/)(td|div|a|ref)(| .+?)(>|&gt;)"
-	
+
 	if "compare" not in res:
 		print("No content found!")
 		return
-		
+
 	html = res["compare"]["*"]
 	lastline = "";
 	for line in html.split("\n"):
 		line = line.strip()
-		if line.startswith("<td class=\"diff-deletedline\">"):
+		if line.startswith("<td class=\"diff-deletedline"):
 			if "<del class=\"diffchange diffchange-inline\">" in line:
 				if format=="termcolor":
 					line = re.sub(deleteEx, "\33[31m"+"\\1"+"\033[0m", line)
@@ -61,7 +61,7 @@ def printDiff(revision, url, format="colors"):
 				elif format=="plain":
 					line = "!!!"+line+"!!!"
 			print(line)
-		if line.startswith("<td class=\"diff-addedline\">"):
+		if line.startswith("<td class=\"diff-addedline"):
 			if "<ins class=\"diffchange diffchange-inline\">" in line:
 				if format=="termcolor":
 					line = re.sub(insertEx, "\33[32m"+"\\1"+"\033[0m", line)
